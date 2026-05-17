@@ -1,6 +1,15 @@
 <!-- BEGIN:nextjs-agent-rules -->
-# Bu Next.js Bildiğin Next.js Değil
 
+
+## Kısa Tanım
+
+Artium ekibinin gösteri merkezinde düzenlediği bilgi yarışması geceleri için bir **sunum + moderasyon platformu**. Klasik bir yarışma uygulaması değil: sistem cevap toplamaz, skor tutmaz — moderatör admin panelinden quiz tanımlar (tema renkleri, font, arka plan görseli) ve quiz altında sorular hazırlar (text + opsiyonel görsel + cevap süresi + zorluk). Yarışma gecesi "live mode" üzerinden quiz seçilir, sorular "Gönder" butonu ile teker teker yayınlanır. Ana ekran (`/`) hem projeksiyona hem de katılımcı telefonlarına yansır; aktif quiz'in teması uygulanır, gönder dendiği an modal açılır, gönderilen soru + geri sayan sayaç + progress bar çıkar, süre dolunca "Süreniz doldu" mesajı görünür. Cevap değerlendirmesi sözlü/elle yapılır.
+
+**Proje dökümanı** `documents/project.md` dosyasıdır. 
+
+## Kurallar
+
+**Bu Next.js Bildiğin Next.js Değil**
 Projede **Next.js 16 (App Router) + React 19** kullanılıyor — API'ler, konvansiyonlar ve dosya yapısı training data'dan farklı olabilir. Kod yazmadan önce `node_modules/next/dist/docs/` içindeki ilgili rehberi oku, deprecation uyarılarını ciddiye al.
 
 - `middleware.ts` yerine `proxy.ts`.
