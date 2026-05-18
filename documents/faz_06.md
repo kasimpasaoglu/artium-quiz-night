@@ -161,7 +161,7 @@ useServerAction(action, { successMessage, errorFallback, onSuccess }) → { run,
 
 `pending` ergonomik (`useTransition` detayı kapatılı), `error.message` zaten Türkçe geliyorsa direkt gösterilir, yoksa `errorFallback`. Form submit, button click ve sıralama tarzı tüm callsite'larda uyumlu.
 
-**Kapsam:** Yalnız Faz 06'nın 4 callsite'ında kullanıldı (`question-form-dialog` create/update, `delete-question-dialog`, `question-table` reorder ×2). Faz 04/05'teki eski callsite'lar (`login-form`, `change-credentials-form`, `delete-quiz-dialog`, `quiz-form`, `quiz-list`) **back-port edilmedi** — PR yalın kalsın, regresyon riski yok. İleride bir simplify pass'inde port edilebilir.
+**Kapsam:** İlk Faz 06 PR'ında yalnız Faz 06'nın 4 callsite'ında kullanıldı; sonradan kullanıcı talebiyle Faz 04/05'teki 6 callsite (`login-form`, `logout-button`, `change-credentials-form`, `quiz-form`, `quiz-list`, `delete-quiz-dialog`) bu hook'a back-port edildi. Toplam 10 callsite. `login-form` ve `logout-button` `fetch` tabanlı; non-OK response için action body içinde explicit `throw new Error(...)` ile hook semantiğine uyduruldu.
 
 ### 3. `DifficultyBadge` (brief'te yoktu) eklendi
 
@@ -244,7 +244,7 @@ Brief "image küçük thumb" diyordu. 50+ satırlık tabloda her satırda `<Imag
 - **Faz 08 (Public sahne):** `QuestionFormDialog`'da preview göstermek için temel layout mantığı `<DialogContent>` içinde, sahne için ayrı bir component yazılır (full-screen, countdown, theme tokens).
 - **Faz 09 (Polish):** Drag-to-reorder (`@dnd-kit/core`) opsiyonel; difficulty için ⭐ rating component değerlendirilir; image-upload tabloda thumbnail (lazy + intersection observer); soru sayısı eşik üstünde pagination veya virtualization.
 - **Faz 10 (Security + Deploy):** Soru silindiğinde `Question.imageUrl` Blob orphan kalıyor — `del()` cleanup eklenir. `setActiveQuiz` ve `reorderQuestion` için rate-limit eklenebilir.
-- **Faz 04/05'teki `useTransition + toast` callsite'ları:** Bir simplify pass'inde `useServerAction`'a port edilebilir; şimdilik scope dışı tutuldu.
+- **Faz 04/05'teki `useTransition + toast` callsite'ları:** Faz 06 sonrası back-port pass'inde `useServerAction`'a taşındı; tüm callsite'lar tek pattern kullanıyor.
 
 ## Doğrulama Sonuçları
 

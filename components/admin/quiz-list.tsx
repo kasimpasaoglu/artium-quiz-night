@@ -3,8 +3,6 @@
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import Link from "next/link";
-import { useTransition } from "react";
-import { toast } from "sonner";
 import { DeleteQuizDialog } from "@/components/admin/delete-quiz-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useServerAction } from "@/hooks/use-server-action";
 import { ROUTES } from "@/lib/routes";
 import { deactivateQuiz, setActiveQuiz } from "@/server/actions/quiz";
 
@@ -64,23 +63,23 @@ export function QuizList({ quizzes }: QuizListProps) {
 }
 
 function QuizRow({ quiz }: { quiz: QuizListRow }) {
-  const [pending, startTransition] = useTransition();
+  const activateAction = useServerAction(setActiveQuiz, {
+    successMessage: "Quiz aktif edildi",
+    errorFallback: "Durum güncellenemedi",
+  });
+  const deactivateAction = useServerAction(deactivateQuiz, {
+    successMessage: "Quiz pasif edildi",
+    errorFallback: "Durum güncellenemedi",
+  });
+
+  const pending = activateAction.pending || deactivateAction.pending;
 
   function handleToggleActive() {
-    startTransition(async () => {
-      try {
-        if (quiz.isActive) {
-          await deactivateQuiz(quiz.id);
-          toast.success("Quiz pasif edildi");
-        } else {
-          await setActiveQuiz(quiz.id);
-          toast.success("Quiz aktif edildi");
-        }
-      } catch (error) {
-        const message = error instanceof Error ? error.message : "Durum güncellenemedi";
-        toast.error(message);
-      }
-    });
+    if (quiz.isActive) {
+      deactivateAction.run(quiz.id);
+    } else {
+      activateAction.run(quiz.id);
+    }
   }
 
   return (

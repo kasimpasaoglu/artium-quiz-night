@@ -2,9 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -16,6 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useServerAction } from "@/hooks/use-server-action";
 import { API_ROUTES, safeAdminNext } from "@/lib/routes";
 import { type LoginInput, loginSchema } from "@/lib/schemas/auth";
 
@@ -23,35 +22,35 @@ const GENERIC_ERROR = "Geçersiz kullanıcı adı veya şifre";
 
 export function LoginForm({ next }: { next?: string }) {
   const router = useRouter();
-  const [pending, startTransition] = useTransition();
 
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
     defaultValues: { username: "", password: "" },
   });
 
-  function onSubmit(values: LoginInput) {
-    startTransition(async () => {
+  const { run: onSubmit, pending } = useServerAction(
+    async (values: LoginInput) => {
+      let response: Response;
       try {
-        const response = await fetch(API_ROUTES.login, {
+        response = await fetch(API_ROUTES.login, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(values),
         });
-
-        if (!response.ok) {
-          const payload = (await response.json().catch(() => null)) as { title?: string } | null;
-          toast.error(payload?.title ?? GENERIC_ERROR);
-          return;
-        }
-
-        toast.success("Giriş başarılı");
-        router.replace(safeAdminNext(next));
       } catch {
-        toast.error("Sunucuya ulaşılamadı, lütfen tekrar deneyin");
+        throw new Error("Sunucuya ulaşılamadı, lütfen tekrar deneyin");
       }
-    });
-  }
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as { title?: string } | null;
+        throw new Error(payload?.title ?? GENERIC_ERROR);
+      }
+    },
+    {
+      successMessage: "Giriş başarılı",
+      errorFallback: GENERIC_ERROR,
+      onSuccess: () => router.replace(safeAdminNext(next)),
+    },
+  );
 
   return (
     <Card className="w-full max-w-sm">

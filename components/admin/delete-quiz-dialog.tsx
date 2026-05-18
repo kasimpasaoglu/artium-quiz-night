@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { toast } from "sonner";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,6 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useServerAction } from "@/hooks/use-server-action";
 import { deleteQuiz } from "@/server/actions/quiz";
 
 interface DeleteQuizDialogProps {
@@ -24,20 +24,11 @@ interface DeleteQuizDialogProps {
 // Onay sonrası `deleteQuiz` server action'ı redirect ile listeye döner.
 export function DeleteQuizDialog({ quizId, quizTitle, children }: DeleteQuizDialogProps) {
   const [open, setOpen] = useState(false);
-  const [pending, startTransition] = useTransition();
-
-  function handleConfirm() {
-    startTransition(async () => {
-      try {
-        await deleteQuiz(quizId);
-        toast.success("Quiz silindi");
-        setOpen(false);
-      } catch (error) {
-        const message = error instanceof Error ? error.message : "Quiz silinemedi";
-        toast.error(message);
-      }
-    });
-  }
+  const { run: handleConfirm, pending } = useServerAction(deleteQuiz, {
+    successMessage: "Quiz silindi",
+    errorFallback: "Quiz silinemedi",
+    onSuccess: () => setOpen(false),
+  });
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -54,7 +45,12 @@ export function DeleteQuizDialog({ quizId, quizTitle, children }: DeleteQuizDial
           <Button type="button" variant="ghost" disabled={pending} onClick={() => setOpen(false)}>
             Vazgeç
           </Button>
-          <Button type="button" variant="destructive" disabled={pending} onClick={handleConfirm}>
+          <Button
+            type="button"
+            variant="destructive"
+            disabled={pending}
+            onClick={() => handleConfirm(quizId)}
+          >
             {pending ? "Siliniyor..." : "Evet, sil"}
           </Button>
         </DialogFooter>

@@ -77,12 +77,24 @@ function onSubmit(values) {
 
 ## Kapsam Notu
 
-Faz 06 callsite'larında kullanılır:
+Tüm server action + auth fetch callsite'larında kullanılır (Faz 06 sonrası back-port edildi):
+
+**Faz 04 (Auth):**
+- `components/admin/login-form.tsx` (fetch wrapper içinde throw)
+- `components/admin/logout-button.tsx` (fetch wrapper içinde throw)
+- `components/admin/change-credentials-form.tsx` (server action + form.reset action içinde)
+
+**Faz 05 (Quiz CRUD):**
+- `components/admin/quiz-form.tsx` (create + update ayrı hook çağrıları)
+- `components/admin/quiz-list.tsx` (per-row activate + deactivate)
+- `components/admin/delete-quiz-dialog.tsx`
+
+**Faz 06 (Soru CRUD):**
 - `components/admin/question-form-dialog.tsx` (create + update)
 - `components/admin/delete-question-dialog.tsx`
 - `components/admin/question-table.tsx` (reorder up/down)
 
-Faz 04/05'teki eski callsite'lar (`login-form`, `change-credentials-form`, `delete-quiz-dialog`, `quiz-form`, `quiz-list`) bu hook'a **port edilmedi** — PR yalın kalsın diye. İleride bir simplify pass'inde back-port edilebilir.
+**fetch çağrıları:** Hook native olarak `throw`'a dayanıyor; `fetch` non-OK response'ta throw etmediği için login/logout'ta action body içinde explicit `throw new Error(...)` ile sarmalanıyor (örnek `login-form.tsx`).
 
 ## Edge Cases
 

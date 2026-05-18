@@ -3,9 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
 import { useForm, useWatch } from "react-hook-form";
-import { toast } from "sonner";
 import { ColorPicker } from "@/components/admin/color-picker";
 import { FontSelect } from "@/components/admin/font-select";
 import { ImageUpload } from "@/components/admin/image-upload";
@@ -23,6 +21,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useServerAction } from "@/hooks/use-server-action";
 import { parseFontKey } from "@/lib/fonts";
 import { DEFAULT_QUIZ_PRESET } from "@/lib/quiz-presets";
 import { ROUTES } from "@/lib/routes";
@@ -68,7 +67,6 @@ function toFormDefaults(data: QuizFormInitialData): QuizFormInput {
 
 export function QuizForm(props: QuizFormProps) {
   const router = useRouter();
-  const [pending, startTransition] = useTransition();
 
   const form = useForm<QuizFormInput>({
     resolver: zodResolver(quizFormSchema),
@@ -78,22 +76,29 @@ export function QuizForm(props: QuizFormProps) {
   const watched = useWatch({ control: form.control });
   const previewFontKey = parseFontKey(watched.fontKey);
 
-  function onSubmit(values: QuizFormInput) {
-    startTransition(async () => {
-      try {
-        if (props.mode === "create") {
-          await createQuiz(values);
-        } else {
-          await updateQuiz(props.initialData.id, values);
-          toast.success("Quiz güncellendi");
-          router.push(ROUTES.adminQuizDetail(props.initialData.id));
-          router.refresh();
-        }
-      } catch (error) {
-        const message = error instanceof Error ? error.message : "Quiz kaydedilemedi";
-        toast.error(message);
+  const createAction = useServerAction(createQuiz, {
+    errorFallback: "Quiz kaydedilemedi",
+  });
+
+  const updateAction = useServerAction(updateQuiz, {
+    successMessage: "Quiz güncellendi",
+    errorFallback: "Quiz kaydedilemedi",
+    onSuccess: () => {
+      if (props.mode === "edit") {
+        router.push(ROUTES.adminQuizDetail(props.initialData.id));
+        router.refresh();
       }
-    });
+    },
+  });
+
+  const pending = createAction.pending || updateAction.pending;
+
+  function onSubmit(values: QuizFormInput) {
+    if (props.mode === "create") {
+      createAction.run(values);
+    } else {
+      updateAction.run(props.initialData.id, values);
+    }
   }
 
   const cancelHref =

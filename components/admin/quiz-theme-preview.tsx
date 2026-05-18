@@ -33,7 +33,7 @@ export function QuizThemePreview({
   return (
     <div
       className={cn(
-        "relative isolate aspect-[16/9] w-full overflow-hidden border border-input",
+        "relative isolate aspect-video w-full overflow-hidden border border-input",
         fontClass,
       )}
       style={{ backgroundColor: primary, color: text }}
@@ -80,7 +80,7 @@ export function QuizThemePreview({
       </div>
 
       <span
-        className="absolute right-4 bottom-4 inline-block h-[2px] w-12"
+        className="absolute right-4 bottom-4 inline-block h-0.5 w-12"
         style={{ backgroundColor: accent }}
         aria-hidden
       />

@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -16,6 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useServerAction } from "@/hooks/use-server-action";
 import { changeCredentials } from "@/server/actions/auth";
 
 const formSchema = z
@@ -41,8 +41,6 @@ const formSchema = z
 type FormValues = z.infer<typeof formSchema>;
 
 export function ChangeCredentialsForm({ currentUsername }: { currentUsername: string }) {
-  const [pending, startTransition] = useTransition();
-
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -53,6 +51,28 @@ export function ChangeCredentialsForm({ currentUsername }: { currentUsername: st
     },
   });
 
+  const { run: runUpdate, pending } = useServerAction(
+    async (values: FormValues) => {
+      const usernameChanged = values.newUsername !== currentUsername;
+      const passwordProvided = values.newPassword.length > 0;
+      await changeCredentials({
+        currentPassword: values.currentPassword,
+        newUsername: usernameChanged ? values.newUsername : undefined,
+        newPassword: passwordProvided ? values.newPassword : undefined,
+      });
+      form.reset({
+        currentPassword: "",
+        newUsername: usernameChanged ? values.newUsername : currentUsername,
+        newPassword: "",
+        newPasswordConfirm: "",
+      });
+    },
+    {
+      successMessage: "Bilgileriniz güncellendi",
+      errorFallback: "Bilgiler güncellenemedi",
+    },
+  );
+
   function onSubmit(values: FormValues) {
     const usernameChanged = values.newUsername !== currentUsername;
     const passwordProvided = values.newPassword.length > 0;
@@ -62,25 +82,7 @@ export function ChangeCredentialsForm({ currentUsername }: { currentUsername: st
       return;
     }
 
-    startTransition(async () => {
-      try {
-        await changeCredentials({
-          currentPassword: values.currentPassword,
-          newUsername: usernameChanged ? values.newUsername : undefined,
-          newPassword: passwordProvided ? values.newPassword : undefined,
-        });
-        toast.success("Bilgileriniz güncellendi");
-        form.reset({
-          currentPassword: "",
-          newUsername: usernameChanged ? values.newUsername : currentUsername,
-          newPassword: "",
-          newPasswordConfirm: "",
-        });
-      } catch (error) {
-        const message = error instanceof Error ? error.message : "Bilgiler güncellenemedi";
-        toast.error(message);
-      }
-    });
+    runUpdate(values);
   }
 
   return (
