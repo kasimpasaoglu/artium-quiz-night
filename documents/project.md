@@ -25,7 +25,7 @@
 | # | Faz | Durum | Tamamlanma | Belge |
 |---|---|---|---|---|
 | 01 | İskelet & Konfigürasyon | ✅ DONE | 2026-05-18 | [faz_01.md](./documents/faz_01.md) |
-| 02 | UI Foundation | ⬜ TODO | — | [faz_02.md](./documents/faz_02.md) |
+| 02 | UI Foundation | ✅ DONE | 2026-05-18 | [faz_02.md](./documents/faz_02.md) |
 | 03 | DB Şema + Migration + Seed | ⬜ TODO | — | [faz_03.md](./documents/faz_03.md) |
 | 04 | Auth Sistemi | ⬜ TODO | — | [faz_04.md](./documents/faz_04.md) |
 | 05 | Admin: Quiz CRUD | ⬜ TODO | — | [faz_05.md](./documents/faz_05.md) |

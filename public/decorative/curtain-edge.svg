@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 400" preserveAspectRatio="none" fill="currentColor" aria-hidden="true">
+  <path d="M0 0
+           L48 0
+           Q40 25 44 50
+           Q38 75 44 100
+           Q40 125 44 150
+           Q38 175 44 200
+           Q40 225 44 250
+           Q38 275 44 300
+           Q40 325 44 350
+           Q38 375 44 400
+           L0 400 Z"/>
+  <path d="M44 0
+           Q40 50 42 100
+           Q40 150 42 200
+           Q40 250 42 300
+           Q40 350 42 400"
+        fill="none" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+</svg>

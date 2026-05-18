@@ -1,26 +1,202 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* shadcn admin tema bağları */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Quiz runtime tema (ThemeApplier override eder, Faz 08) */
+  --color-quiz-primary: var(--quiz-primary);
+  --color-quiz-accent: var(--quiz-accent);
+  --color-quiz-text: var(--quiz-text);
+  --font-quiz: var(--quiz-font);
+
+  /* Admin sabit tema semantic alias'ları */
+  --color-admin-bg: var(--admin-bg);
+  --color-admin-fg: var(--admin-fg);
+  --color-admin-accent: var(--admin-accent);
+
+  /* Şekil token'ları (DESIGN.md §05) */
+  --shape-sharp: 0;
+  --shape-soft: 2px;
+  --shape-pill: 9999px;
+
+  /* Çizgi ölçeği (DESIGN.md §05) */
+  --stroke-hair: 1px;
+  --stroke-rule: 2px;
+  --stroke-heavy: 4px;
+  --stroke-poster: 8px;
+
+  /* Spacing token'ları (DESIGN.md §06) */
+  --space-stage: clamp(3rem, 8vw, 8rem);
+  --space-breath: clamp(1rem, 2vw, 2rem);
+  --space-rule: 4px;
+
+  /* Animasyon süreleri (DESIGN.md §07) */
+  --duration-micro: 120ms;
+  --duration-small: 240ms;
+  --duration-stage: 520ms;
+  --duration-curtain: 820ms;
+  --duration-breath: 4600ms;
+
+  /* Animasyon timing fonksiyonları (DESIGN.md §07) */
+  --motion-curtain: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --motion-spotlight: cubic-bezier(0.65, 0, 0.35, 1);
+  --motion-ink: cubic-bezier(0.4, 0, 0.6, 1);
+  --motion-breathe: cubic-bezier(0.45, 0.05, 0.55, 0.95);
+
+  /* Tipografi scale — Perfect Fourth 1.333 (DESIGN.md §03) */
+  --text-display: clamp(3.5rem, 8vw, 7.5rem);
+  --text-title: clamp(2rem, 4.5vw, 3.5rem);
+  --text-section: clamp(1.5rem, 2.5vw, 2rem);
+  --text-body: clamp(0.95rem, 1.1vw, 1.0625rem);
+  --text-meta: 0.75rem;
 }
 
-@media (prefers-color-scheme: dark) {
+:root {
+  /* Admin sabit tema (DESIGN.md §13) */
+  --admin-bg: #faf8f4;
+  --admin-fg: #1a1815;
+  --admin-accent: #9c5a2e;
+
+  /* shadcn admin variable'ları — admin tema değerleriyle eşlenir */
+  --background: var(--admin-bg);
+  --foreground: var(--admin-fg);
+  --card: #ffffff;
+  --card-foreground: var(--admin-fg);
+  --popover: #ffffff;
+  --popover-foreground: var(--admin-fg);
+  --primary: var(--admin-accent);
+  --primary-foreground: var(--admin-bg);
+  --secondary: #efeae0;
+  --secondary-foreground: var(--admin-fg);
+  --muted: #efeae0;
+  --muted-foreground: #5b5550;
+  --accent: var(--admin-accent);
+  --accent-foreground: var(--admin-bg);
+  --destructive: #b23a2f;
+  --border: #d9d2c5;
+  --input: #d9d2c5;
+  --ring: var(--admin-accent);
+  --chart-1: #9c5a2e;
+  --chart-2: #c4a572;
+  --chart-3: #5b5550;
+  --chart-4: #b23a2f;
+  --chart-5: #2a2622;
+  --radius: 0.125rem;
+  --sidebar: var(--admin-bg);
+  --sidebar-foreground: var(--admin-fg);
+  --sidebar-primary: var(--admin-accent);
+  --sidebar-primary-foreground: var(--admin-bg);
+  --sidebar-accent: #efeae0;
+  --sidebar-accent-foreground: var(--admin-fg);
+  --sidebar-border: #d9d2c5;
+  --sidebar-ring: var(--admin-accent);
+
+  /* Default quiz teması — Klasik Sahne (DESIGN.md §11 / §13) */
+  --quiz-primary: #1a1815;
+  --quiz-accent: #c4a572;
+  --quiz-text: #f4efe6;
+  --quiz-font: var(--font-playfair-display);
+}
+
+@media (prefers-reduced-motion: reduce) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --duration-micro: 0ms;
+    --duration-small: 0ms;
+    --duration-stage: 0ms;
+    --duration-curtain: 0ms;
+    --duration-breath: 0ms;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Custom border utility'leri (DESIGN.md §05 stroke ölçeği) */
+@utility border-rule {
+  border-width: var(--stroke-rule);
+}
+@utility border-heavy {
+  border-width: var(--stroke-heavy);
+}
+@utility border-poster {
+  border-width: var(--stroke-poster);
+}
+
+/* Custom keyframes (DESIGN.md §07 — Faz 08 modal koreografisi) */
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.65;
+  }
+}
+
+@keyframes ink-press {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+@keyframes curtain-reveal {
+  0% {
+    clip-path: inset(0 100% 0 0);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--quiz-font);
+  }
 }
