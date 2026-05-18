@@ -16,6 +16,10 @@ export function AdminShell({
           Artium Quiz Night · Yönetim
         </Link>
         <nav className="flex items-center gap-3 text-sm">
+          <Link href={ROUTES.adminLive} className="text-muted-foreground hover:text-foreground">
+            Live Mode
+          </Link>
+          <span className="text-muted-foreground">·</span>
           <Link href={ROUTES.adminSettings} className="text-muted-foreground hover:text-foreground">
             Ayarlar
           </Link>

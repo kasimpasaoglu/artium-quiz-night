@@ -30,7 +30,7 @@
 | 04 | Auth Sistemi | ✅ DONE | 2026-05-18 | [faz_04.md](./documents/faz_04.md) |
 | 05 | Admin: Quiz CRUD | ✅ DONE | 2026-05-18 | [faz_05.md](./documents/faz_05.md) |
 | 06 | Admin: Soru CRUD | ✅ DONE | 2026-05-18 | [faz_06.md](./documents/faz_06.md) |
-| 07 | Realtime + Admin Live Mode | ⬜ TODO | — | [faz_07.md](./documents/faz_07.md) |
+| 07 | Realtime + Admin Live Mode | ✅ DONE | 2026-05-18 | [faz_07.md](./documents/faz_07.md) |
 | 08 | Ana Ekran (Sunum) | ⬜ TODO | — | [faz_08.md](./documents/faz_08.md) |
 | 09 | Polish + Mobile + A11y | ⬜ TODO | — | [faz_09.md](./documents/faz_09.md) |
 | 10 | Security + Deploy + Docs | ⬜ TODO | — | [faz_10.md](./documents/faz_10.md) |

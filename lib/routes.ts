@@ -2,6 +2,7 @@ export const ROUTES = {
   adminHome: "/quiz-admin",
   adminLogin: "/quiz-admin/login",
   adminSettings: "/quiz-admin/settings",
+  adminLive: "/quiz-admin/live",
   adminQuizNew: "/quiz-admin/quizzes/new",
   adminQuizDetail: (id: string) => `/quiz-admin/quizzes/${id}`,
   adminQuizEdit: (id: string) => `/quiz-admin/quizzes/${id}/edit`,
@@ -11,6 +12,10 @@ export const API_ROUTES = {
   login: "/api/auth/login",
   logout: "/api/auth/logout",
   upload: "/api/upload",
+  liveSend: "/api/live/send",
+  liveEnd: "/api/live/end",
+  liveTheme: "/api/live/theme",
+  liveReset: "/api/live/reset",
 } as const;
 
 const ADMIN_PREFIX = ROUTES.adminHome;

@@ -6,14 +6,16 @@ const envSchema = z.object({
   SESSION_SECRET: z
     .string()
     .min(32, "SESSION_SECRET en az 32 karakter olmalı (JWT imzalama için)."),
-  // Pusher değişkenleri Faz 07'de (realtime) zorunlu olacak; o zamana kadar
-  // optional ki Faz 04 build'i .env.local'a placeholder yazmadan çalışsın.
-  PUSHER_APP_ID: z.string().optional(),
-  PUSHER_KEY: z.string().optional(),
-  PUSHER_SECRET: z.string().optional(),
-  PUSHER_CLUSTER: z.string().optional(),
-  NEXT_PUBLIC_PUSHER_KEY: z.string().optional(),
-  NEXT_PUBLIC_PUSHER_CLUSTER: z.string().optional(),
+  // Pusher Channels — Faz 07'de realtime yayın altyapısı için zorunlu.
+  // Server tarafı (`PUSHER_*`) ile client tarafı (`NEXT_PUBLIC_PUSHER_*`)
+  // ayrı namespace'ler: build sırasında client bundle'a yalnız `NEXT_PUBLIC_*`
+  // gömülür, secret asla sızmaz.
+  PUSHER_APP_ID: z.string().min(1, "PUSHER_APP_ID tanımlı olmalı."),
+  PUSHER_KEY: z.string().min(1, "PUSHER_KEY tanımlı olmalı."),
+  PUSHER_SECRET: z.string().min(1, "PUSHER_SECRET tanımlı olmalı."),
+  PUSHER_CLUSTER: z.string().min(1, "PUSHER_CLUSTER tanımlı olmalı (örn. eu)."),
+  NEXT_PUBLIC_PUSHER_KEY: z.string().min(1, "NEXT_PUBLIC_PUSHER_KEY tanımlı olmalı."),
+  NEXT_PUBLIC_PUSHER_CLUSTER: z.string().min(1, "NEXT_PUBLIC_PUSHER_CLUSTER tanımlı olmalı."),
   // Vercel Blob client-direct upload Faz 05'te zorunlu (quiz arka plan görseli).
   // Token `vercel env pull .env.local` ile alınır.
   BLOB_READ_WRITE_TOKEN: z.string().optional(),
