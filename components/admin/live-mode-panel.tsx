@@ -144,7 +144,7 @@ function ActiveBanner({ activeQuiz, resetPending, onReset }: ActiveBannerProps) 
           variant="outline"
           onClick={onReset}
           disabled={resetPending}
-          className="self-start lg:self-center"
+          className="min-h-11 min-w-11 self-start lg:self-center"
         >
           <XCircleIcon className="size-4" aria-hidden />
           {resetPending ? "Kapatılıyor..." : "Modal'ı Kapat"}
@@ -352,9 +352,9 @@ function SendQuestionRow({ question, index, isLastSent, onSent }: SendQuestionRo
       <TableCell className="text-right">
         <Button
           type="button"
-          size="sm"
           onClick={() => send.run(question.id)}
           disabled={send.pending}
+          className="min-h-11 min-w-11"
         >
           <SendIcon className="size-3.5" aria-hidden />
           {send.pending ? "Gönderiliyor..." : isLastSent ? "Tekrar Gönder" : "Gönder"}

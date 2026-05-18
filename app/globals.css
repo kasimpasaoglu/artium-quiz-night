@@ -199,4 +199,12 @@
     @apply bg-background text-foreground antialiased;
     font-family: var(--quiz-font);
   }
+  /* iOS Safari'de input/textarea focus olunca viewport kayar; sayfanın
+     üst kısmına biraz mesafe bırakarak focus'lanan alan klavyenin altında
+     kalmasın. */
+  input,
+  textarea,
+  select {
+    scroll-margin-block: 6rem;
+  }
 }

@@ -49,7 +49,13 @@ export function DeleteQuestionDialog({
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button type="button" variant="ghost" disabled={pending} onClick={() => setOpen(false)}>
+          <Button
+            type="button"
+            variant="ghost"
+            disabled={pending}
+            onClick={() => setOpen(false)}
+            className="min-h-11 min-w-11"
+          >
             Vazgeç
           </Button>
           <Button
@@ -57,6 +63,7 @@ export function DeleteQuestionDialog({
             variant="destructive"
             disabled={pending}
             onClick={() => handleConfirm(questionId)}
+            className="min-h-11 min-w-11"
           >
             {pending ? "Siliniyor..." : "Evet, sil"}
           </Button>

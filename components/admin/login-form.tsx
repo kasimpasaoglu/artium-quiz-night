@@ -99,7 +99,7 @@ export function LoginForm({ next }: { next?: string }) {
                 </FormItem>
               )}
             />
-            <Button type="submit" disabled={pending} className="w-full">
+            <Button type="submit" disabled={pending} className="min-h-11 w-full">
               {pending ? "Giriş yapılıyor..." : "Giriş Yap"}
             </Button>
           </form>

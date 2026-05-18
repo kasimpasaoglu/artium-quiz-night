@@ -28,6 +28,7 @@ export function QuestionModal({ question, isTimeUp }: QuestionModalProps) {
           style={{ animationDuration: "var(--duration-stage)" }}
         />
         <DialogPrimitive.Content
+          aria-modal="true"
           onEscapeKeyDown={(event) => event.preventDefault()}
           onPointerDownOutside={(event) => event.preventDefault()}
           onInteractOutside={(event) => event.preventDefault()}

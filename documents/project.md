@@ -32,7 +32,7 @@
 | 06 | Admin: Soru CRUD | ✅ DONE | 2026-05-18 | [faz_06.md](./documents/faz_06.md) |
 | 07 | Realtime + Admin Live Mode | ✅ DONE | 2026-05-18 | [faz_07.md](./documents/faz_07.md) |
 | 08 | Ana Ekran (Sunum) | ✅ DONE | 2026-05-18 | [faz_08.md](./documents/faz_08.md) |
-| 09 | Polish + Mobile + A11y | ⬜ TODO | — | [faz_09.md](./documents/faz_09.md) |
+| 09 | Polish + Mobile + A11y | ✅ DONE | 2026-05-19 | [faz_09.md](./documents/faz_09.md) |
 | 10 | Security + Deploy + Docs | ⬜ TODO | — | [faz_10.md](./documents/faz_10.md) |
 
 **Durum sembolleri:** ⬜ TODO · 🟡 IN PROGRESS · ✅ DONE

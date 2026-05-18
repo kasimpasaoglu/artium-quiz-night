@@ -27,7 +27,8 @@ export function CountdownDisplay({ serverStartAt, durationSec }: CountdownDispla
           transform: inFinalStretch ? "scale(1.08)" : undefined,
           transition: "transform 200ms var(--motion-ink), color 200ms ease",
         }}
-        aria-live="polite"
+        role="timer"
+        aria-live="off"
       >
         {String(seconds).padStart(2, "0")}
       </span>
