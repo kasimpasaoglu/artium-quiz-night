@@ -1,119 +1,87 @@
-# `useLiveSession()` — Ön Spec
+# `useLiveSession(initialTheme)`
 
-> **Durum:** Faz 07'de yalnız spec yazıldı, implementasyon Faz 08'de tamamlanır.
-> Bu doküman public ekran (`(public)/page.tsx`) tarafından bağlanacak hook için
-> kontrat görevi görür.
+> **Durum:** ✅ DONE (Faz 08, 2026-05-18).
 
-## Amaç
+Public sahnede Pusher Channels üzerinden gelen dört event'i (`question:show`, `question:end`, `quiz:theme-change`, `session:reset`) toplayıp sahne bileşenlerine (`<ThemeApplier>`, `<QuestionModal>`) reactive state olarak sunan client-side hook. `getPusherClient()` singleton üzerinden subscribe eder, unmount'ta cleanup yapar.
 
-Pusher kanalına (`LIVE_CHANNEL`) subscribe olur, dört event'i (`question:show`,
-`question:end`, `quiz:theme-change`, `session:reset`) dinler ve sahne
-bileşenlerinin tüketeceği reactive state'i döndürür. `getPusherClient`
-singleton üzerinden çalışır, cleanup'ı yapar.
-
-## İmza (Faz 08 dolduracak)
+## İmza
 
 ```ts
-function useLiveSession(): UseLiveSessionResult;
-
-interface UseLiveSessionResult {
-  /** Açık soru — yoksa idle ekran render edilir. */
+function useLiveSession(initialTheme: ThemeSnapshot | null): {
   currentQuestion: QuestionShowPayload | null;
-  /** En son tema (aktif quiz değiştikçe güncellenir). */
   theme: ThemeSnapshot | null;
-  /** `session:reset` veya `question:end` ile tetiklenir; ekran bunu modal kapama tetiği olarak kullanır. */
-  closedAt: number | null;
-}
+  isTimeUp: boolean;
+};
 ```
 
-`closedAt` epoch ms değeri — değişimi React'in re-render'a karar verme kararsızlığını
-çözer. `boolean` flag yerine `number` kullanıldığı için aynı sebepten tekrar
-tetiklenebilir.
+`initialTheme`: `(public)/page.tsx` server component'i DB'den aktif quiz'i çekip `buildThemeSnapshot()` ile dönüştürür ve hook'a ilk değer olarak verir. Pusher event beklemeden ilk render'da idle ekran doğru tema ile çizilir.
 
-## İç Plan
+## Davranış
+
+### Event Bindings
+
+| Event | Davranış |
+|---|---|
+| `question:show` | `setCurrentQuestion(payload)`, `setTheme(payload.themeSnapshot)`, `setIsTimeUp(false)`. Modal açılır, sayaç sıfırlanır. |
+| `question:end` | `setIsTimeUp(true)`. **Modal kapanmaz**, yalnız `<TimeUpOverlay>` tetiklenir. |
+| `quiz:theme-change` | `setTheme({ quizId, ...theme })`. Yeni quiz aktif edildiyse idle ekran tema güncellenir. |
+| `session:reset` | `setCurrentQuestion(null)`, `setIsTimeUp(false)`. Modal kapanır, idle ekrana dönülür. |
+
+### Sapma Notu (Faz 07 Ön Spec → Faz 08 Final)
+
+Faz 07 ön spec'i `closedAt: number | null` (epoch ms) döndürüyordu — modal'ı kapatma tetiği olarak. Faz 08 brief'i farklı UX istedi: süre dolunca modal kapanmaz, yalnız "Süreniz Doldu" overlay tetiklenir, modal yalnız `session:reset` ile kapanır. Bu yüzden `isTimeUp: boolean` flag'ine geçildi; `closedAt` semantiği kaldırıldı.
+
+### Cleanup
 
 ```ts
+return () => {
+  channel.unbind(LIVE_EVENT.questionShow, onShow);
+  channel.unbind(LIVE_EVENT.questionEnd, onEnd);
+  channel.unbind(LIVE_EVENT.themeChange, onThemeChange);
+  channel.unbind(LIVE_EVENT.sessionReset, onReset);
+  client.unsubscribe(LIVE_CHANNEL);
+};
+```
+
+HMR + React 19 StrictMode kombinasyonunda double-effect ile cleanup unbind çalışır; kalıcı subscription leak yok. `getPusherClient()` zaten singleton (HMR'da çoklu WebSocket açmaz).
+
+## Kullanım
+
+```tsx
 "use client";
 
-import { useEffect, useState } from "react";
-import { getPusherClient } from "@/lib/pusher-client";
-import {
-  LIVE_CHANNEL,
-  LIVE_EVENT,
-  type QuestionShowPayload,
-  type QuestionEndPayload,
-  type QuizThemeChangePayload,
-  type ThemeSnapshot,
-} from "@/lib/schemas/live";
+import { useLiveSession } from "@/hooks/use-live-session";
 
-export function useLiveSession(initialTheme: ThemeSnapshot | null): UseLiveSessionResult {
-  const [currentQuestion, setCurrentQuestion] = useState<QuestionShowPayload | null>(null);
-  const [theme, setTheme] = useState<ThemeSnapshot | null>(initialTheme);
-  const [closedAt, setClosedAt] = useState<number | null>(null);
-
-  useEffect(() => {
-    const client = getPusherClient();
-    const channel = client.subscribe(LIVE_CHANNEL);
-
-    function onShow(payload: QuestionShowPayload) {
-      setCurrentQuestion(payload);
-      setTheme(payload.themeSnapshot);
-    }
-
-    function onEnd(_payload: QuestionEndPayload) {
-      setClosedAt(Date.now());
-    }
-
-    function onThemeChange({ quizId, theme }: QuizThemeChangePayload) {
-      setTheme({ quizId, ...theme });
-    }
-
-    function onReset() {
-      setCurrentQuestion(null);
-      setClosedAt(Date.now());
-    }
-
-    channel.bind(LIVE_EVENT.questionShow, onShow);
-    channel.bind(LIVE_EVENT.questionEnd, onEnd);
-    channel.bind(LIVE_EVENT.themeChange, onThemeChange);
-    channel.bind(LIVE_EVENT.sessionReset, onReset);
-
-    return () => {
-      channel.unbind(LIVE_EVENT.questionShow, onShow);
-      channel.unbind(LIVE_EVENT.questionEnd, onEnd);
-      channel.unbind(LIVE_EVENT.themeChange, onThemeChange);
-      channel.unbind(LIVE_EVENT.sessionReset, onReset);
-      client.unsubscribe(LIVE_CHANNEL);
-    };
-  }, []);
-
-  return { currentQuestion, theme, closedAt };
+export function PresentationStage({ initialTheme, quizTitle }) {
+  const { currentQuestion, theme, isTimeUp } = useLiveSession(initialTheme);
+  const activeTheme = theme ?? initialTheme;
+  return (
+    <ThemeApplier theme={activeTheme}>
+      <EmptyState theme={activeTheme} quizTitle={quizTitle} />
+      {currentQuestion && (
+        <QuestionModal question={currentQuestion} isTimeUp={isTimeUp} />
+      )}
+    </ThemeApplier>
+  );
 }
 ```
-
-## `initialTheme` Parametresi
-
-Server component (`(public)/page.tsx`) DB'den aktif quiz'in temasını çekip
-hook'a inject eder. Public ekran ilk yüklemede Pusher event beklemeden idle
-ekranı doğru tema ile render eder. Pusher reconnect sonrası gelen
-`quiz:theme-change` event'i state'i tazeler.
 
 ## Bağımlılıklar
 
 - `react` — `useState`, `useEffect`.
 - `@/lib/pusher-client` — `getPusherClient`.
-- `@/lib/schemas/live` — tipler + olay sabitleri.
+- `@/lib/schemas/live` — `LIVE_CHANNEL`, `LIVE_EVENT`, payload tipleri.
 
-## Edge Case'ler
+## Edge Cases
 
-- **HMR'da double-subscribe:** `getPusherClient` singleton + `useEffect` cleanup birlikte StrictMode'da bile leak'i engeller.
-- **Süre client tarafında ölçülür:** Hook süre ile ilgilenmez; `currentQuestion.serverStartAt + durationSec` mantığı sahne bileşeninde (countdown component) yer alır.
-- **Kaçırılan event:** Pusher Free plan history vermez. Hook reload anında DB'den initial state alır (`initialTheme`). Aktif soru var ise public ekran "yayın başladı, modal'ı bekleyin" gibi bir hint gösterebilir; ürün kararı Faz 08'de verilir.
-- **Race condition (hızlı iki gönder):** Backend tarafında çift tıklama disabled. Hook tarafında son gelen `question:show` her zaman state'i overwrite eder, sorun yok.
+- **HMR'da double-subscribe:** Singleton + `useEffect` cleanup StrictMode'da bile leak'i engeller.
+- **Süre client tarafında ölçülür:** Hook süre ile ilgilenmez; `currentQuestion.serverStartAt + durationSec` mantığı `<CountdownDisplay>` içindeki `useCountdown` hook'una emanet edilir.
+- **Kaçırılan event:** Pusher Free plan history vermez; reconnect sırasında trigger'lanmış event'ler kaybedilir. Reload anında server component DB'den `Quiz.isActive` çeker — initial tema gelir. Aktif soru (in-flight) state'i kaybolur; admin `session:reset` + tekrar `question:show` ile yeniden başlatır.
+- **Race condition (hızlı iki gönder):** Admin UI'da buton `disabled={pending}`. Hook tarafında son gelen `question:show` her zaman state'i overwrite eder.
+- **`question:end` event'i hiç gelmeyebilir:** Faz 07 admin UI'da bu event'i tetikleyen CTA yok. `<QuestionModal>` client-side `useCountdown.isFinished` ile bağımsız overlay tetikler — server event gelmese de sahne tutarlı kalır.
 
-## Faz 08 Yapılacaklar
+## Bağlantılı Belgeler
 
-- [ ] Bu hook'u `hooks/use-live-session.ts` olarak yaz.
-- [ ] Test: `bind/unbind/unsubscribe` cleanup'ı React DevTools veya Pusher dashboard "active connections" ile doğrula.
-- [ ] Sahne bileşenleri (`components/presentation/`) hook çıktısını consume etsin.
-- [ ] Bu doküman implement edilince **Durum:** ✅ DONE olarak güncellenir.
+- `documents/pusher-protocol.md` — Faz 07 event payload kontratı.
+- `documents/hooks/use-countdown.md` — Süre ölçümü.
+- `documents/theme-system.md` — Tema state akışı ve DOM uygulaması.

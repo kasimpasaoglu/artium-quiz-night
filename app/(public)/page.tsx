@@ -1,15 +1,29 @@
-export default function PublicHome() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-quiz-primary p-[var(--space-stage)] text-center text-quiz-text">
-      <h1 className="font-quiz text-display font-bold leading-[0.95] tracking-[-0.03em]">
-        Artium Quiz Night
-      </h1>
-      <p className="mt-[var(--space-breath)] font-quiz text-body opacity-80">
-        Sahne hazır — sunum bekleniyor
-      </p>
-      <p className="mt-[var(--space-breath)] font-quiz text-meta uppercase opacity-60 tracking-[0.08em]">
-        ç ğ ı ö ş ü · Ç Ğ İ Ö Ş Ü
-      </p>
-    </main>
-  );
+import { EmptyState } from "@/components/presentation/EmptyState";
+import { PresentationStage } from "@/components/presentation/PresentationStage";
+import { prisma } from "@/db/prisma";
+import { buildThemeSnapshot } from "@/lib/schemas/live";
+
+// Aktif quiz state'i sık değişir; statik prerender uygun değil.
+export const dynamic = "force-dynamic";
+
+export default async function PublicHome() {
+  const activeQuiz = await prisma.quiz.findFirst({
+    where: { isActive: true },
+    select: {
+      id: true,
+      title: true,
+      primaryColor: true,
+      accentColor: true,
+      textColor: true,
+      backgroundUrl: true,
+      fontKey: true,
+    },
+  });
+
+  if (!activeQuiz) {
+    return <EmptyState theme={null} quizTitle={null} />;
+  }
+
+  const initialTheme = buildThemeSnapshot(activeQuiz);
+  return <PresentationStage initialTheme={initialTheme} quizTitle={activeQuiz.title} />;
 }
