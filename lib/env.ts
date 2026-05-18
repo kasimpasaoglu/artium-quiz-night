@@ -18,7 +18,9 @@ const envSchema = z.object({
   NEXT_PUBLIC_PUSHER_CLUSTER: z.string().min(1, "NEXT_PUBLIC_PUSHER_CLUSTER tanımlı olmalı."),
   // Vercel Blob client-direct upload Faz 05'te zorunlu (quiz arka plan görseli).
   // Token `vercel env pull .env.local` ile alınır.
-  BLOB_READ_WRITE_TOKEN: z.string().optional(),
+  BLOB_READ_WRITE_TOKEN: z
+    .string()
+    .min(1, "BLOB_READ_WRITE_TOKEN tanımlı olmalı (Vercel Blob store)."),
   NODE_ENV: z.enum(["development", "production", "test"]),
 });
 
