@@ -1,0 +1,18 @@
+// Prisma şema dosyası. Modeller Faz 03'te eklenecek; şu an yalnızca datasource
+// ve generator tanımlı. Detay: https://pris.ly/d/prisma-schema
+//
+// Prisma 7 notları:
+// - Generator `prisma-client` (yeni nesil); client `lib/generated/prisma`'ya
+//   yazılır (repo dışı; `.gitignore` ignored). Import: `@/lib/generated/prisma/client`.
+// - Datasource bloğunda `url` yok — DATABASE_URL `prisma.config.ts` üzerinden
+//   `dotenv/config` ile yüklenir.
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../lib/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "sqlserver"
+}

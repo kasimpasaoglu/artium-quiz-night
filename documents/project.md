@@ -24,7 +24,7 @@
 
 | # | Faz | Durum | Tamamlanma | Belge |
 |---|---|---|---|---|
-| 01 | İskelet & Konfigürasyon | ⬜ TODO | — | [faz_01.md](./documents/faz_01.md) |
+| 01 | İskelet & Konfigürasyon | ✅ DONE | 2026-05-18 | [faz_01.md](./documents/faz_01.md) |
 | 02 | UI Foundation | ⬜ TODO | — | [faz_02.md](./documents/faz_02.md) |
 | 03 | DB Şema + Migration + Seed | ⬜ TODO | — | [faz_03.md](./documents/faz_03.md) |
 | 04 | Auth Sistemi | ⬜ TODO | — | [faz_04.md](./documents/faz_04.md) |
@@ -64,6 +64,7 @@ npm run dev
    - Başlıktaki **Durum**'u `✅ DONE` + tamamlama tarihi (ISO) yap.
    - Checklist'i `[x]` olarak işaretle.
    - "Sapma Logu" bölümünü doldur (planlanmadık ne değişti, neden, başka fazı etkiler mi).
+   - Sapmalarda Brief ile çelişen yapılarda en dogru en güncel çözümleri tercih et. Brief out of date ve ya ilgili sapmayı düşünmeden hazırlanmış olabilir.
 4. **Bu `project.md` tablosunda** kendi satırını `✅ DONE` + tarih olarak işaretle.
 5. (Opsiyonel) Stage & commit — message: `feat(faz-XX): <kısa özet>`.
 
