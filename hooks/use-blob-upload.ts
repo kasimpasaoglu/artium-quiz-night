@@ -73,7 +73,6 @@ export function useBlobUpload(folder: BlobFolder): UseBlobUploadResult {
         const result = await upload(pathname, file, {
           access: "public",
           handleUploadUrl: API_ROUTES.upload,
-          multipart: true,
           contentType: file.type,
           onUploadProgress: ({ percentage }) => setProgress(percentage),
         });
