@@ -1,10 +1,10 @@
 "use client";
 
+import type { QuestionShowPayload } from "@/lib/schemas/live";
+import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import { useEffect, useState } from "react";
-import type { QuestionShowPayload } from "@/lib/schemas/live";
-import { cn } from "@/lib/utils";
 import { CountdownDisplay } from "./CountdownDisplay";
 import { TimeUpOverlay } from "./TimeUpOverlay";
 
@@ -43,7 +43,7 @@ export function QuestionModal({ question, isTimeUp }: QuestionModalProps) {
             {question.text}
           </DialogPrimitive.Description>
 
-          <header className="flex items-center justify-between px-[var(--space-stage)] pt-[var(--space-stage)]">
+          <header className="flex items-center justify-between px-(--space-stage) pt-(--space-stage)">
             <DifficultyPips value={question.difficulty} />
             <span
               className="font-quiz uppercase opacity-60"
@@ -54,17 +54,17 @@ export function QuestionModal({ question, isTimeUp }: QuestionModalProps) {
           </header>
 
           <span
-            className="pointer-events-none absolute inset-y-0 left-0 hidden w-[var(--stroke-heavy)] bg-quiz-accent/30 md:block"
+            className="pointer-events-none absolute inset-y-0 left-0 hidden w-(--stroke-heavy) bg-quiz-accent/30 md:block"
             aria-hidden
           />
           <span
-            className="pointer-events-none absolute inset-y-0 right-0 hidden w-[var(--stroke-heavy)] bg-quiz-accent/30 md:block"
+            className="pointer-events-none absolute inset-y-0 right-0 hidden w-(--stroke-heavy) bg-quiz-accent/30 md:block"
             aria-hidden
           />
 
           <div
             key={question.questionId}
-            className="relative flex flex-1 flex-col items-center justify-center gap-[var(--space-stage)] px-[var(--space-stage)] py-[var(--space-breath)]"
+            className="relative flex flex-1 flex-col items-center justify-center gap-(--space-stage) px-(--space-stage) py-(--space-breath)"
           >
             {question.imageUrl && (
               <div
@@ -99,7 +99,7 @@ export function QuestionModal({ question, isTimeUp }: QuestionModalProps) {
 
           <footer
             className={cn(
-              "px-[var(--space-stage)] pb-[var(--space-stage)] transition-opacity duration-300",
+              "px-(--space-stage) pb-(--space-stage) transition-opacity duration-300",
               showTimeUp ? "pointer-events-none opacity-0" : "opacity-100",
             )}
           >
