@@ -18,6 +18,8 @@ Projede **Next.js 16 (App Router) + React 19** kullanılıyor — API'ler, konva
 
 **Proje dökümanı** `documents/project.md` dosyasıdır. MVP versiyonu tamamlanana kadar her agent bu dokumanı okumalıdır.
 
+**UI/UX Tasarımı** konularında referans dokuman `documents/DESIGN.md` dosyasıdır. Bu tarz görevlerde okunmalıdır.
+
 **Türkçe karakter zorunluluğu:** `ç`, `ğ`, `ı`, `ö`, `ş`, `ü` ve büyük halleri (`Ç`, `Ğ`, `İ`, `Ö`, `Ş`, `Ü`) eksiksiz yazılır. Form label, validation mesajı, toast, buton, placeholder, empty state, hata mesajı, `zod`/`yup` schema mesajı, `notify()` çağrısı, ProblemDetails text, API description, exception message, commit message, PR body, code comment hepsi dahil. Kaynak metinde eksik karakter varsa tamamlayarak taşı.
 
 - **Kullanıcı yazı stilini taklit etme:** Kullanıcı İngilizce klavye, kısaltma, lowercase veya eksik noktalama ile yazıyor olabilir. Agent her zaman düzgün Türkçe (karakterler tam, noktalama yerinde, cümle yapısı net) yanıt verir; kullanıcının üslubu agent çıktısını bozmaz.
