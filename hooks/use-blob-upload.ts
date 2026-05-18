@@ -79,6 +79,7 @@ export function useBlobUpload(folder: BlobFolder): UseBlobUploadResult {
         setProgress(100);
         return result.url;
       } catch (err) {
+        console.error("[blob-upload] raw error", err);
         const message = mapError(err);
         setError(message);
         throw new Error(message);
