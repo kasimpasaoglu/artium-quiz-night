@@ -1,11 +1,7 @@
-// Prisma şema dosyası. Modeller Faz 03'te eklenecek; şu an yalnızca datasource
-// ve generator tanımlı. Detay: https://pris.ly/d/prisma-schema
-//
-// Prisma 7 notları:
-// - Generator `prisma-client` (yeni nesil); client `lib/generated/prisma`'ya
-//   yazılır (repo dışı; `.gitignore` ignored). Import: `@/lib/generated/prisma/client`.
-// - Datasource bloğunda `url` yok — DATABASE_URL `prisma.config.ts` üzerinden
-//   `dotenv/config` ile yüklenir.
+// Prisma 7 şeması — provider `prisma-client` (yeni nesil generator), client
+// `lib/generated/prisma` altına yazılır. Datasource URL `prisma.config.ts`
+// üzerinden gelir. Runtime'da `@prisma/adapter-mssql` driver adapter zorunludur
+// (bkz. `db/prisma.ts`).
 
 generator client {
   provider     = "prisma-client"
@@ -15,4 +11,42 @@ generator client {
 
 datasource db {
   provider = "sqlserver"
+}
+
+model AdminUser {
+  id           String   @id @default(uuid()) @db.UniqueIdentifier
+  username     String   @unique @db.NVarChar(100)
+  passwordHash String   @db.NVarChar(Max)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Quiz {
+  id            String     @id @default(uuid()) @db.UniqueIdentifier
+  title         String     @db.NVarChar(200)
+  description   String?    @db.NVarChar(Max)
+  backgroundUrl String?    @db.NVarChar(1000)
+  primaryColor  String     @default("#1A1815") @db.Char(7)
+  accentColor   String     @default("#C4A572") @db.Char(7)
+  textColor     String     @default("#F4EFE6") @db.Char(7)
+  fontKey       String     @default("playfair-display") @db.NVarChar(50)
+  isActive      Boolean    @default(false)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  questions     Question[]
+}
+
+model Question {
+  id          String   @id @default(uuid()) @db.UniqueIdentifier
+  quizId      String   @db.UniqueIdentifier
+  quiz        Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  text        String   @db.NVarChar(Max)
+  imageUrl    String?  @db.NVarChar(1000)
+  durationSec Int
+  difficulty  Int
+  orderIndex  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([quizId, orderIndex])
 }

@@ -26,10 +26,10 @@
 |---|---|---|---|---|
 | 01 | İskelet & Konfigürasyon | ✅ DONE | 2026-05-18 | [faz_01.md](./documents/faz_01.md) |
 | 02 | UI Foundation | ✅ DONE | 2026-05-18 | [faz_02.md](./documents/faz_02.md) |
-| 03 | DB Şema + Migration + Seed | ⬜ TODO | — | [faz_03.md](./documents/faz_03.md) |
-| 04 | Auth Sistemi | ⬜ TODO | — | [faz_04.md](./documents/faz_04.md) |
-| 05 | Admin: Quiz CRUD | ⬜ TODO | — | [faz_05.md](./documents/faz_05.md) |
-| 06 | Admin: Soru CRUD | ⬜ TODO | — | [faz_06.md](./documents/faz_06.md) |
+| 03 | DB Şema + Migration + Seed | ✅ DONE | 2026-05-18 | [faz_03.md](./documents/faz_03.md) |
+| 04 | Auth Sistemi | ✅ DONE | 2026-05-18 | [faz_04.md](./documents/faz_04.md) |
+| 05 | Admin: Quiz CRUD | ✅ DONE | 2026-05-18 | [faz_05.md](./documents/faz_05.md) |
+| 06 | Admin: Soru CRUD | ✅ DONE | 2026-05-18 | [faz_06.md](./documents/faz_06.md) |
 | 07 | Realtime + Admin Live Mode | ⬜ TODO | — | [faz_07.md](./documents/faz_07.md) |
 | 08 | Ana Ekran (Sunum) | ⬜ TODO | — | [faz_08.md](./documents/faz_08.md) |
 | 09 | Polish + Mobile + A11y | ⬜ TODO | — | [faz_09.md](./documents/faz_09.md) |

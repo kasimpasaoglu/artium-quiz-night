@@ -205,3 +205,13 @@ export const FONT_WHITELIST_VARIABLES = Object.values(FONT_WHITELIST)
   .join(" ");
 
 export const DEFAULT_FONT_KEY: FontKey = "playfair-display";
+
+// DB'den gelen `fontKey` her zaman whitelist'te olmayabilir (eski kayıtlar,
+// manuel müdahale). `parseFontKey` whitelist üyesini garanti eder; geçersiz
+// değerlerde sessizce default'a düşer.
+export function parseFontKey(value: string | null | undefined): FontKey {
+  if (typeof value === "string" && value in FONT_WHITELIST) {
+    return value as FontKey;
+  }
+  return DEFAULT_FONT_KEY;
+}

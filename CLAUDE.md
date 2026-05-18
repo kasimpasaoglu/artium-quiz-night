@@ -26,4 +26,6 @@ Projede **Next.js 16 (App Router) + React 19** kullanılıyor — API'ler, konva
 
 **Her zaman verilen göreve uygun skilleri bul ve kullan** Skill setlerini kontrol etmeden göreve başlama.
 
+**shadcn** component eklemek gerekirse: `npx shadcn@latest add <name> --yes --overwrite`. CLI hang olursa upstream'den manuel kopyala, components/ui/ altına yaz.
+
 <!-- END:nextjs-agent-rules -->
