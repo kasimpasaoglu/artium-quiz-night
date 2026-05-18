@@ -68,8 +68,16 @@ export function useBlobUpload(folder: BlobFolder): UseBlobUploadResult {
       setProgress(0);
       setError(null);
 
+      console.log("[blob-upload] start", {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        folder,
+      });
+
       try {
         const pathname = buildBlobPathname(folder, file.name);
+        console.log("[blob-upload] pathname", pathname);
         const result = await upload(pathname, file, {
           access: "public",
           handleUploadUrl: API_ROUTES.upload,
