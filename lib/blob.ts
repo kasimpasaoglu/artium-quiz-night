@@ -7,7 +7,7 @@ export const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"] as 
 
 export type AllowedImageType = (typeof ALLOWED_IMAGE_TYPES)[number];
 
-export const MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
+export const MAX_IMAGE_SIZE_BYTES = 4 * 1024 * 1024; // 4 MB (Vercel function body limit ≈ 4.5 MB)
 
 // Vercel Blob içinde dosyalar bu prefix'lerin altında tutulur. Faz 06 soru
 // görselleri için `questionImage` tekrar kullanılır.

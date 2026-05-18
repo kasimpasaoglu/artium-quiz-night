@@ -1,47 +1,59 @@
-import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
+import { put } from "@vercel/blob";
 import { type NextRequest, NextResponse } from "next/server";
-import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE_BYTES } from "@/lib/blob";
+import {
+  ALLOWED_IMAGE_TYPES,
+  BLOB_FOLDERS,
+  type BlobFolder,
+  MAX_IMAGE_SIZE_BYTES,
+  buildBlobPathname,
+  isAllowedImageType,
+} from "@/lib/blob";
 import { env } from "@/lib/env";
 import { problem } from "@/lib/problem";
 import { requireAdmin } from "@/server/guards";
 
-// Vercel Blob client-direct upload protokolünün server tarafı. İki tip event
-// gelir:
-//   1) `blob.generate-client-token` — admin onaylanır, allowed content-type +
-//      size limit'leri token'a gömülür.
-//   2) `blob.upload-completed` — Vercel'in webhook'u; cookie taşımaz, bu yüzden
-//      auth burada yapılamaz. Token üretirken kontrol zaten yapıldı.
-//
-// `/api/upload` proxy matcher (`/api/admin/*`) dışında bırakılır: callback URL
-// Vercel'den geldiğinde cookie yok, proxy yönlendirir ve flow kırılır. Auth
-// `onBeforeGenerateToken` içinde sağlanır.
-export async function POST(request: NextRequest) {
-  const body = (await request.json()) as HandleUploadBody;
+const SIZE_MB = MAX_IMAGE_SIZE_BYTES / (1024 * 1024);
 
+// Server-side blob upload: client multipart form-data ile dosya gönderir,
+// burada Vercel Blob'a put() ile yüklenir. Önceki client-direct akış (Vercel
+// API'sine doğrudan PUT) production'da 400 + CORS hatası verdiği için kaldırıldı.
+// Function body limit'i nedeniyle max dosya 4 MB (limit lib/blob.ts içinde).
+export async function POST(request: NextRequest) {
   try {
-    const result = await handleUpload({
-      body,
-      request,
+    await requireAdmin();
+
+    const form = await request.formData();
+    const file = form.get("file");
+    const folder = form.get("folder");
+
+    if (!(file instanceof File)) {
+      return problem("Dosya alınamadı.", 400);
+    }
+    if (typeof folder !== "string" || !(folder in BLOB_FOLDERS)) {
+      return problem("Geçersiz klasör.", 400);
+    }
+    if (!isAllowedImageType(file.type)) {
+      return problem(
+        `Desteklenmeyen görsel formatı. ${ALLOWED_IMAGE_TYPES.join(", ")} olmalı.`,
+        415,
+      );
+    }
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      return problem(`Dosya çok büyük (en fazla ${SIZE_MB} MB).`, 413);
+    }
+
+    const pathname = buildBlobPathname(folder as BlobFolder, file.name);
+    const result = await put(pathname, file, {
+      access: "public",
+      contentType: file.type,
+      addRandomSuffix: true,
+      cacheControlMaxAge: 60 * 60 * 24 * 365,
       token: env.BLOB_READ_WRITE_TOKEN,
-      onBeforeGenerateToken: async () => {
-        await requireAdmin();
-        return {
-          allowedContentTypes: [...ALLOWED_IMAGE_TYPES],
-          maximumSizeInBytes: MAX_IMAGE_SIZE_BYTES,
-          addRandomSuffix: true,
-          cacheControlMaxAge: 60 * 60 * 24 * 365,
-        };
-      },
-      onUploadCompleted: async () => {
-        // URL form üzerinden quiz/soru kaydına yazılır; burada DB write yok.
-        // `BlobPreconditionFailedError` ve benzeri hatalar Vercel tarafında
-        // raporlanır.
-      },
     });
 
-    return NextResponse.json(result);
+    return NextResponse.json({ url: result.url });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Yükleme tokeni oluşturulamadı";
-    return problem(message, 400);
+    const message = error instanceof Error ? error.message : "Yükleme başarısız.";
+    return problem(message, 500);
   }
 }
